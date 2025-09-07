@@ -356,7 +356,7 @@ st.markdown(
         }
     </style>
     <div class="footer">
-        Developed by <strong>GSky</strong>
+        Developed by <strong>PragyanAI</strong>
     </div>
     """, unsafe_allow_html=True)
 
