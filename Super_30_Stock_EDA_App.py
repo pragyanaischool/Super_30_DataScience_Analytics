@@ -267,13 +267,17 @@ def visuals_dashboard():
     try:
         nifty50 = get_live_nifty50(period=period_mapping[time_period])
         
+        # Flatten the MultiIndex to a single level for easier plotting
+        if isinstance(nifty50.columns, pd.MultiIndex):
+            nifty50.columns = nifty50.columns.droplevel(axis=1)
+
         # Use .dropna().empty to safely check for valid data points
         if nifty50.empty or 'Close' not in nifty50.columns or nifty50['Close'].dropna().empty:
             st.warning("No valid data available for the selected time range. Please select a different period.")
         else:
-            chart_type = st.radio("Select Chart Type:", ["Line Chart", "Candlestick Chart"], index=0, horizontal=True, key='live_chart_type')
-            if chart_type == "Line Chart":
-                fig = px.line(nifty50, x=nifty50.index, y='Close', title=f"Nifty 50 Live Chart - {time_period}")
+            chart_type = st.radio("Select Chart Type:", ["Area Chart", "Candlestick Chart"], index=0, horizontal=True, key='live_chart_type')
+            if chart_type == "Area Chart":
+                fig = px.area(nifty50, x=nifty50.index, y='Close', title=f"Nifty 50 Live Chart - {time_period}")
                 st.plotly_chart(fig)
             elif chart_type == "Candlestick Chart":
                 fig = go.Figure(data=[go.Candlestick(
