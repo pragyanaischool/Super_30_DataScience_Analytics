@@ -263,31 +263,36 @@ def visuals_dashboard():
     period_mapping = {
         "1 Day": "1d", "1 Month": "1mo", "1 Year": "1y", "2 Years": "2y", "5 Years": "5y", "Max": "max"
     }
-    nifty50 = get_live_nifty50(period=period_mapping[time_period])
     
-    if nifty50.empty or 'Close' not in nifty50.columns or nifty50['Close'].isnull().all():
-        st.warning("No valid data available for the selected time range. Please select a different period.")
-    else:
-        chart_type = st.radio("Select Chart Type:", ["Line Chart", "Candlestick Chart"], index=0, horizontal=True, key='live_chart_type')
-        if chart_type == "Line Chart":
-            fig = px.line(nifty50, x=nifty50.index, y='Close', title=f"Nifty 50 Live Chart - {time_period}")
-            st.plotly_chart(fig)
-        elif chart_type == "Candlestick Chart":
-            fig = go.Figure(data=[go.Candlestick(
-                x=nifty50.index,
-                open=nifty50['Open'],
-                high=nifty50['High'],
-                low=nifty50['Low'],
-                close=nifty50['Close'],
-                increasing_line_color='green', decreasing_line_color='red'
-            )])
-            fig.update_layout(
-                title=f"Nifty 50 Candlestick Chart - {time_period}",
-                xaxis_title="Date",
-                yaxis_title="Price",
-                xaxis_rangeslider_visible=False
-            )
-            st.plotly_chart(fig)
+    try:
+        nifty50 = get_live_nifty50(period=period_mapping[time_period])
+        
+        if nifty50.empty or 'Close' not in nifty50.columns or nifty50['Close'].isnull().all():
+            st.warning("No valid data available for the selected time range. Please select a different period.")
+        else:
+            chart_type = st.radio("Select Chart Type:", ["Line Chart", "Candlestick Chart"], index=0, horizontal=True, key='live_chart_type')
+            if chart_type == "Line Chart":
+                fig = px.line(nifty50, x=nifty50.index, y='Close', title=f"Nifty 50 Live Chart - {time_period}")
+                st.plotly_chart(fig)
+            elif chart_type == "Candlestick Chart":
+                fig = go.Figure(data=[go.Candlestick(
+                    x=nifty50.index,
+                    open=nifty50['Open'],
+                    high=nifty50['High'],
+                    low=nifty50['Low'],
+                    close=nifty50['Close'],
+                    increasing_line_color='green', decreasing_line_color='red'
+                )])
+                fig.update_layout(
+                    title=f"Nifty 50 Candlestick Chart - {time_period}",
+                    xaxis_title="Date",
+                    yaxis_title="Price",
+                    xaxis_rangeslider_visible=False
+                )
+                st.plotly_chart(fig)
+    except Exception as e:
+        st.error(f"An error occurred while fetching live data. Please try again later.")
+        st.exception(e)
         
     st.markdown("---")
 
