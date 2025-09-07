@@ -27,7 +27,7 @@ def download_figure(fig):
     return buffer
 
 # Streamlit app configuration
-st.set_page_config(page_title="Nifty 50 Advanced Dashboard", layout="wide")
+st.set_page_config(page_title="PragyanAI - Nifty 50 Advanced Dashboard", layout="wide")
 st.title("Nifty 50 Advanced Dashboard")
 
 # Sidebar for stock selection and "Select All" button
