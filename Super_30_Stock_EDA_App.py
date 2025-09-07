@@ -265,8 +265,8 @@ def visuals_dashboard():
     }
     nifty50 = get_live_nifty50(period=period_mapping[time_period])
     
-    if nifty50.empty:
-        st.warning("No data available for the selected time range. Please select a different period.")
+    if nifty50.empty or 'Close' not in nifty50.columns or nifty50['Close'].isnull().all():
+        st.warning("No valid data available for the selected time range. Please select a different period.")
     else:
         chart_type = st.radio("Select Chart Type:", ["Line Chart", "Candlestick Chart"], index=0, horizontal=True, key='live_chart_type')
         if chart_type == "Line Chart":
