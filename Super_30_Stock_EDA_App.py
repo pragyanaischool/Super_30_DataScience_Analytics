@@ -28,6 +28,7 @@ def download_figure(fig):
     return buffer
 
 # Streamlit app configuration
+st.image("PragyanAI_logo.png")
 st.set_page_config(page_title="PragyanAI - Nifty 50 Advanced Dashboard", layout="wide")
 st.title("Nifty 50 Advanced Dashboard")
 
@@ -82,9 +83,12 @@ def add_insights_box(dashboard_name, selected_stocks, log_selected_stocks):
             # Correlation Insight
             corr_matrix = log_selected_stocks.corr()
             corr_pairs = corr_matrix.unstack().sort_values(ascending=False)
-            highest_corr_pair = corr_pairs[corr_pairs.index.get_level_values(0) != corr_pairs.index.get_level_values(1)].iloc[0]
-            stock1, stock2 = highest_corr_pair.name
-            insights.append(f"**Highest Correlation:** The stocks **{stock1}** and **{stock2}** have the highest correlation of **{highest_corr_pair:.2f}**, suggesting they often move in the same direction.")
+            
+            # Find the index of the highest non-self correlation pair
+            highest_corr_pair_index = corr_pairs[corr_pairs.index.get_level_values(0) != corr_pairs.index.get_level_values(1)].idxmax()
+            stock1, stock2 = highest_corr_pair_index
+            highest_corr_pair_value = corr_pairs.loc[highest_corr_pair_index]
+            insights.append(f"**Highest Correlation:** The stocks **{stock1}** and **{stock2}** have the highest correlation of **{highest_corr_pair_value:.2f}**, suggesting they often move in the same direction.")
 
             # PCA Insight
             pca = PCA().fit(log_selected_stocks)
@@ -261,26 +265,29 @@ def visuals_dashboard():
     }
     nifty50 = get_live_nifty50(period=period_mapping[time_period])
     
-    chart_type = st.radio("Select Chart Type:", ["Line Chart", "Candlestick Chart"], index=0, horizontal=True, key='live_chart_type')
-    if chart_type == "Line Chart":
-        fig = px.line(nifty50, x=nifty50.index, y='Close', title=f"Nifty 50 Live Chart - {time_period}")
-        st.plotly_chart(fig)
-    elif chart_type == "Candlestick Chart":
-        fig = go.Figure(data=[go.Candlestick(
-            x=nifty50.index,
-            open=nifty50['Open'],
-            high=nifty50['High'],
-            low=nifty50['Low'],
-            close=nifty50['Close'],
-            increasing_line_color='green', decreasing_line_color='red'
-        )])
-        fig.update_layout(
-            title=f"Nifty 50 Candlestick Chart - {time_period}",
-            xaxis_title="Date",
-            yaxis_title="Price",
-            xaxis_rangeslider_visible=False
-        )
-        st.plotly_chart(fig)
+    if nifty50.empty:
+        st.warning("No data available for the selected time range. Please select a different period.")
+    else:
+        chart_type = st.radio("Select Chart Type:", ["Line Chart", "Candlestick Chart"], index=0, horizontal=True, key='live_chart_type')
+        if chart_type == "Line Chart":
+            fig = px.line(nifty50, x=nifty50.index, y='Close', title=f"Nifty 50 Live Chart - {time_period}")
+            st.plotly_chart(fig)
+        elif chart_type == "Candlestick Chart":
+            fig = go.Figure(data=[go.Candlestick(
+                x=nifty50.index,
+                open=nifty50['Open'],
+                high=nifty50['High'],
+                low=nifty50['Low'],
+                close=nifty50['Close'],
+                increasing_line_color='green', decreasing_line_color='red'
+            )])
+            fig.update_layout(
+                title=f"Nifty 50 Candlestick Chart - {time_period}",
+                xaxis_title="Date",
+                yaxis_title="Price",
+                xaxis_rangeslider_visible=False
+            )
+            st.plotly_chart(fig)
         
     st.markdown("---")
 
@@ -357,4 +364,3 @@ st.markdown(
 st.sidebar.subheader("Download Data")
 csv_data = convert_df_to_csv(all_stocks)
 st.sidebar.download_button(label="Download Stock Data as CSV", data=csv_data, file_name='stock_data.csv', mime='text/csv')
-
