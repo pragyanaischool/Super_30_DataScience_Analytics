@@ -58,7 +58,7 @@ Ensure you have Python 3.7 or later installed. You will also need the following 
 - **requirements.txt**: List of dependencies required to run the application.
 
 ### Deployment
-You can access the deployed version of the app here: [Nifty50 Analytics Hub](https://nifty50-analytics.streamlit.app/)
+You can access the deployed version of the app here: [Nifty50 Analytics Hub](---)
 
 License
 - This project is licensed under the MIT License. See the LICENSE file for details.
@@ -67,4 +67,4 @@ Contributing
 - Contributions are welcome! Feel free to submit a pull request or report any issues.
 
 Contact
-- For questions or feedback, please reach out to GSky at [gagansinghal1729@gmail.com].
+- For questions or feedback, please reach out to GSky at [pragyan.ai.school@gmail.com].
