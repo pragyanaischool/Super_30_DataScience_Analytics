@@ -269,7 +269,7 @@ def visuals_dashboard():
         
         # Flatten the MultiIndex to a single level for easier plotting
         if isinstance(nifty50.columns, pd.MultiIndex):
-            nifty50.columns = nifty50.columns.droplevel(axis=1)
+            nifty50.columns = nifty50.columns.droplevel(level=0)
 
         # Use .dropna().empty to safely check for valid data points
         if nifty50.empty or 'Close' not in nifty50.columns or nifty50['Close'].dropna().empty:
